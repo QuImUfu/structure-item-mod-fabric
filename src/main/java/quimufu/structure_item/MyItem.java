@@ -110,10 +110,13 @@ public class MyItem extends Item {
                 }
             }
             Block current = c.getWorld().getBlockState(c.getBlockPos()).getBlock();
+
             if (allowed != null && !current.equals(allowed)) {
+                Text currentName = new TranslatableText(current.getTranslationKey());
+                Text allowedName = new TranslatableText(allowed.getTranslationKey());
                 TranslatableText message =
                         new TranslatableText("items.structure.spawner.invalid.block.clicked",
-                                current.getName(), allowed.getName());
+                                currentName, allowedName);
                 sendPlayer(player, message);
                 return ActionResult.FAIL;
             }
@@ -239,7 +242,7 @@ public class MyItem extends Item {
     private Block getBlock(String loc) {
         Identifier location = Identifier.tryParse(loc);
         DefaultedRegistry<Block> blocks = Registry.BLOCK;
-        if (location == null || !blocks.containsId(location)) {
+        if (location == null) {
             return null;
         }
         return blocks.get(location);
