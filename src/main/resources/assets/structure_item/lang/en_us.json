@@ -1,0 +1,18 @@
+{
+  "items.structure.spawner.invalid.block.clicked": "Digga %s is net %s, maan.",
+  "items.structure.spawner.invalid.location": "An irreplaceable block is in the way!",
+  "items.structure.spawner.invalid.structure.name": "Invalid structure name",
+  "items.structure.spawner.structure.nonexistent": "Structure: %s does not exist",
+  "items.structure.spawner.invalid.block": "Block %s invalid",
+  "items.structure.spawner.no.tag": "Item has no NBT tag",
+  "items.structure.spawner.no.structure": "Item has no String \"structure\": tag",
+  "item.structure_item.item": "Structure Spawner",
+  "item.structure_item.item.tooltip.tag.invalid": "Invalid item!",
+  "item.structure_item.item.tooltip.structure": "Places down: ",
+  "item.structure_item.item.tooltip.allowed.on": "Can be placed on: ",
+  "item.structure_item.item.tooltip.fixed.offset": "Offset:",
+  "item.structure_item.item.tooltip.xyz":"  x: %s y: %s z: %s",
+  "item.structure_item.item.tooltip.dynamic.offset": "Dynamic offset",
+  "item.structure_item.item.tooltip.blacklist": "Blacklist:",
+  "item.structure_item.item.tooltip.blacklist.more": "  And %s more..."
+}

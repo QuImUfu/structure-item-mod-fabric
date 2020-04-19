@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "structure_item",
+  "version": "${version}",
+  "name": "Structure Item Mod (Fabric)",
+  "description": "This mod adds an item, that, with proper NBT might help you build a modpack... maybe",
+  "authors": [
+    "QuImUfu"
+  ],
+  "contributors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/structure_item/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "quimufu.structure_item.StructureItemMod"
+    ],
+    "client": [],
+    "server": []
+  },
+  "mixins": [],
+  "depends": {
+    "fabricloader": ">=0.4.0",
+    "fabric": "*"
+  }
+}
