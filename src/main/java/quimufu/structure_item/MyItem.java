@@ -1,17 +1,13 @@
 package quimufu.structure_item;
 
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.Dynamic;
 import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.datafixer.NbtOps;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -53,8 +49,8 @@ public class MyItem extends Item {
                     texts.add(new TranslatableText("item.structure_item.item.tooltip.allowed.on"));
                     texts.add(new LiteralText("  " + tag.getString("allowedOn")));
                 }
-                if (tag.contains("offset")) {
-                    BlockPos offset = BlockPos.deserialize(new Dynamic<Tag>(NbtOps.INSTANCE, tag.get("offset")));
+                if (tag.contains("offset", 10)) {
+                    BlockPos offset = NbtHelper.toBlockPos(tag.getCompound("offset"));
                     texts.add(new TranslatableText("item.structure_item.item.tooltip.fixed.offset"));
                     Text c = new TranslatableText("item.structure_item.item.tooltip.xyz",
                             new LiteralText(String.valueOf(offset.getX())),
@@ -145,8 +141,8 @@ public class MyItem extends Item {
             }
 
             BlockPos loc = c.getBlockPos().offset(c.getSide());
-            if (tag.contains("offset")) {
-                BlockPos offset = BlockPos.deserialize(new Dynamic<Tag>(NbtOps.INSTANCE, tag.get("offset")));
+            if (tag.contains("offset", 10)) {
+                BlockPos offset = NbtHelper.toBlockPos(tag.getCompound("offset"));
                 loc = loc.add(offset);
             } else if (c.getPlayer() != null) {
                 Direction direction = Direction.getEntityFacingOrder(c.getPlayer())[0];
@@ -176,11 +172,11 @@ public class MyItem extends Item {
             }
             ps.setWorld(c.getWorld())
                     .setSize(x.getSize())
-                    .setMirrored(BlockMirror.NONE)
+                    .setMirror(BlockMirror.NONE)
                     .setRotation(BlockRotation.NONE)
                     .setChunkPosition(null);
-            boolean succes = x.method_15172(c.getWorld(), loc, ps, 2);
-            if (succes) {
+            boolean success = x.place((ServerWorld)c.getWorld(), loc, loc, ps, c.getWorld().getRandom(), 2);
+            if (success) {
                 c.getStack().decrement(1);
                 return ActionResult.SUCCESS;
             }
@@ -204,8 +200,8 @@ public class MyItem extends Item {
 
     private static void sendPlayerChat(ServerPlayerEntity player, Text message) {
         if (player != null)
-            player.sendChatMessage(message, MessageType.SYSTEM);
-        LOGGER.info(message.asFormattedString());
+            player.sendMessage(message, false);
+        LOGGER.info(message.asString());
     }
 
     private BlockPos getDirectionalOffset(Direction direction, BlockPos size) {
