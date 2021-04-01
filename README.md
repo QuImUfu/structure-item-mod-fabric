@@ -11,8 +11,8 @@ If the clicked block is Stone and neither Diamond blocks nor Bedrock is in the w
 If you leave out "structure", it won't work.  
 If you leave out "offset", it will place the structure at the block you clicked at, expanding in your view direction, up and to both sides. if you look up or down, it'll place the structure centered above or below the block you clicked at.  
 If you leave out "blacklist", it will replace anything.  
-If you leave out "allowedOn", it will allow "placement" on any block.
-If you leave out "replaceEntities" or set it to 1, entities in the way will be deleted.
+If you leave out "allowedOn", it will allow "placement" on any block.  
+If you leave out "replaceEntities" or set it to 1, entities in the way will be deleted.  
 If you leave out "placeEntities" or set it to 1, entities saved in the structure will be placed.
 
 Any errors made by the creators will be displayed in chat, any errors made by the user will produce a fat massage in the middle of the screen.
