@@ -7,8 +7,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.*;
-import net.minecraft.network.MessageType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -72,6 +74,16 @@ public class MyItem extends Item {
                                     new LiteralText(String.valueOf(bl.size() - i))));
                         }
                     }
+                }
+                if (!tag.contains("replaceEntities", 99) || tag.getBoolean("replaceEntities")) {
+                    texts.add(new TranslatableText("item.structure_item.item.tooltip.replaceEntities"));
+                } else {
+                    texts.add(new TranslatableText("item.structure_item.item.tooltip.doNotReplaceEntities"));
+                }
+                if (!tag.contains("placeEntities", 99) || tag.getBoolean("placeEntities")) {
+                    texts.add(new TranslatableText("item.structure_item.item.tooltip.placeEntities"));
+                } else {
+                    texts.add(new TranslatableText("item.structure_item.item.tooltip.doNotPlaceEntities"));
                 }
             }
         }
@@ -153,6 +165,12 @@ public class MyItem extends Item {
             }
 
             MyPlacementSettings ps = (new MyPlacementSettings());
+            if (tag.contains("replaceEntities", 99)) {
+                ps.setReplaceEntities(tag.getBoolean("replaceEntities"));
+            }
+            if (tag.contains("placeEntities", 99)) {
+                ps.setIgnoreEntities(!tag.getBoolean("placeEntities"));
+            }
             if (tag.contains("blacklist", 9)) {
                 ListTag bl = tag.getList("blacklist", 8);
                 List<Block> blacklist = Lists.newArrayList();
@@ -175,7 +193,12 @@ public class MyItem extends Item {
                     .setMirror(BlockMirror.NONE)
                     .setRotation(BlockRotation.NONE)
                     .setChunkPosition(null);
-            boolean success = x.place((ServerWorld)c.getWorld(), loc, loc, ps, c.getWorld().getRandom(), 2);
+            boolean success = false;
+            try {
+                if(x.place((ServerWorld)c.getWorld(), loc, loc, ps, c.getWorld().getRandom(), 2))
+                    success = true;
+            } catch (NullPointerException ignored) {
+            }
             if (success) {
                 c.getStack().decrement(1);
                 return ActionResult.SUCCESS;

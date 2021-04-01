@@ -1,6 +1,6 @@
 {
   "items.structure.spawner.invalid.block.clicked": "Digga %s is net %s, maan.",
-  "items.structure.spawner.invalid.location": "An irreplaceable block is in the way!",
+  "items.structure.spawner.invalid.location": "Something is in the way!",
   "items.structure.spawner.invalid.structure.name": "Invalid structure name",
   "items.structure.spawner.structure.nonexistent": "Structure: %s does not exist",
   "items.structure.spawner.invalid.block": "Block %s invalid",
@@ -14,5 +14,9 @@
   "item.structure_item.item.tooltip.xyz":"  x: %s y: %s z: %s",
   "item.structure_item.item.tooltip.dynamic.offset": "Dynamic offset",
   "item.structure_item.item.tooltip.blacklist": "Blacklist:",
-  "item.structure_item.item.tooltip.blacklist.more": "  And %s more..."
+  "item.structure_item.item.tooltip.blacklist.more": "  And %s more...",
+  "item.structure_item.item.tooltip.replaceEntities": "Deletes Entities in the way",
+  "item.structure_item.item.tooltip.doNotReplaceEntities": "Doesn't allow placement with Entities in the way",
+  "item.structure_item.item.tooltip.placeEntities": "Places contained Entities",
+  "item.structure_item.item.tooltip.doNotPlaceEntities": "Doesn't place contained Entities"
 }
