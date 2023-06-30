@@ -2,7 +2,8 @@ package quimufu.structure_item;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.item.Item;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +20,7 @@ public class StructureItemMod implements ModInitializer {
     @Override
     public void onInitialize() {
         log(Level.INFO, "Initializing");
-        Registry.register(Registry.ITEM, MOD_ID + ":item", item);
+        Registry.register(Registries.ITEM, MOD_ID + ":item", item);
     }
 
     public static void log(Level level, String message) {
