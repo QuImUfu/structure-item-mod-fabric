@@ -5,7 +5,6 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
@@ -16,13 +15,10 @@ import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.registry.DefaultedRegistry;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.SimpleDefaultedRegistry;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureTemplate;
-import net.minecraft.text.LiteralTextContent;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -63,6 +59,17 @@ public class MyItem extends Item {
                             Text.literal(String.valueOf(offset.getY())),
                             Text.literal(String.valueOf(offset.getZ())));
                     texts.add(c);
+                } else if (tag.contains("offsetV2", 10)) {
+
+                    NbtCompound offsetV2 = tag.getCompound("offsetV2");
+
+                    texts.add(Text.translatable("item.structure_item.item.tooltip.v2.offset"));
+                    texts.add(Text.translatable("item.structure_item.item.tooltip.xFuncOff",
+                            Text.literal(String.valueOf(offsetV2.get("x")))));
+                    texts.add(Text.translatable("item.structure_item.item.tooltip.yFuncOff",
+                            Text.literal(String.valueOf(offsetV2.get("y")))));
+                    texts.add(Text.translatable("item.structure_item.item.tooltip.zFuncOff",
+                            Text.literal(String.valueOf(offsetV2.get("z")))));
                 } else {
                     texts.add(Text.translatable("item.structure_item.item.tooltip.dynamic.offset"));
                 }
@@ -70,7 +77,7 @@ public class MyItem extends Item {
                     texts.add(Text.translatable("item.structure_item.item.tooltip.blacklist"));
                     NbtList bl = tag.getList("blacklist", 8);
                     int i = 0;
-                    for ( NbtElement entry : bl) {
+                    for (NbtElement entry : bl) {
                         texts.add(Text.literal("  " + entry.asString()));
                         i++;
                         if (i == 4) {
@@ -91,6 +98,7 @@ public class MyItem extends Item {
                 }
             }
         }
+
     }
 
     @Override
@@ -162,12 +170,23 @@ public class MyItem extends Item {
             if (tag.contains("offset", 10)) {
                 BlockPos offset = NbtHelper.toBlockPos(tag.getCompound("offset"));
                 loc = loc.add(offset);
-            } else if (c.getPlayer() != null) {
-                Direction direction = Direction.getEntityFacingOrder(c.getPlayer())[0];
-                Vec3i size = x.getSize();
-                loc = loc.add(getDirectionalOffset(direction, size));
+            } else if (tag.contains("offsetV2", 10)) {
+                Direction direction = c.getSide().getOpposite();
+                try {
+                    StructureOffsetSettings offset = StructureOffsetSettings.ofTag(tag.getCompound("offsetV2"));
+                    Vec3i size = x.getSize();
+                    loc = loc.add(offset.getEffective(direction, size));
+                } catch (Exception e) {
+                    Text message =
+                            Text.translatable("items.structure.spawner.invalid.offsetV2",
+                                    Text.literal(tag.getCompound("offsetV2").asString()), e.getMessage());
+                    sendPlayerChat(player, message);
+                }
             } else {
-                LOGGER.info("No player & no offset");
+                Direction direction = c.getSide().getOpposite();
+                StructureOffsetSettings offset = StructureOffsetSettings.dynamic();
+                Vec3i size = x.getSize();
+                loc = loc.add(offset.getEffective(direction, size));
             }
 
             MyPlacementSettings ps = (new MyPlacementSettings());
@@ -200,7 +219,7 @@ public class MyItem extends Item {
                     .setRotation(BlockRotation.NONE);
             boolean success = false;
             try {
-                if(x.place((ServerWorld)c.getWorld(), loc, loc, ps, c.getWorld().getRandom(), 2))
+                if (x.place((ServerWorld) c.getWorld(), loc, loc, ps, c.getWorld().getRandom(), 2))
                     success = true;
             } catch (NullPointerException ignored) {
             }
@@ -230,35 +249,6 @@ public class MyItem extends Item {
         if (player != null)
             player.sendMessage(message, false);
         LOGGER.info(message.getContent());
-    }
-
-    private BlockPos getDirectionalOffset(Direction direction, Vec3i size) {
-        BlockPos loc = new BlockPos(0, 0, 0);
-        switch (direction) {
-            case WEST -> {
-                loc = loc.offset(Direction.NORTH, size.getZ() / 2);
-                loc = loc.offset(Direction.WEST, size.getX() - 1);
-            }
-            case EAST -> //positive x
-                    loc = loc.offset(Direction.NORTH, size.getZ() / 2);
-            case NORTH -> {
-                loc = loc.offset(Direction.NORTH, size.getZ() - 1);
-                loc = loc.offset(Direction.WEST, size.getX() / 2);
-            }
-            case SOUTH -> //positive z
-                    loc = loc.offset(Direction.WEST, size.getX() / 2);
-            case UP -> {    //positive y
-                loc = loc.offset(Direction.NORTH, size.getZ() / 2);
-                loc = loc.offset(Direction.WEST, size.getX() / 2);
-                loc = loc.offset(Direction.UP);
-            }
-            case DOWN -> {
-                loc = loc.offset(Direction.NORTH, size.getZ() / 2);
-                loc = loc.offset(Direction.WEST, size.getX() / 2);
-                loc = loc.offset(Direction.DOWN, size.getY());
-            }
-        }
-        return loc;
     }
 
     private Block getBlock(String loc) {
