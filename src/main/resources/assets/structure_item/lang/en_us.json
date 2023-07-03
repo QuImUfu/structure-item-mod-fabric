@@ -1,5 +1,6 @@
 {
-  "items.structure.spawner.invalid.block.clicked": "Digga %s is net %s, maan.",
+  "items.structure.spawner.invalid.block.clicked": "Can only be placed on %2$s, not %1$s.",
+  "items.structure.spawner.invalid.location.reason": "%s is in the way at %s, %s, %s!",
   "items.structure.spawner.invalid.location": "Something is in the way!",
   "items.structure.spawner.invalid.structure.name": "Invalid structure name",
   "items.structure.spawner.structure.nonexistent": "Structure: %s does not exist",

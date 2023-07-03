@@ -200,9 +200,9 @@ public class MyItem extends Item {
 
                 Vec3i size = x.getSize();
                 switch (rotation) {
-                    case CLOCKWISE_90 -> loc = loc.add(new Vec3i(size.getX()-1, 0, 0));
-                    case CLOCKWISE_180 -> loc = loc.add(new Vec3i(size.getX()-1, 0, size.getZ()-1));
-                    case COUNTERCLOCKWISE_90 -> loc = loc.add(new Vec3i(0, 0, size.getZ()-1));
+                    case CLOCKWISE_90 -> loc = loc.add(new Vec3i(size.getX() - 1, 0, 0));
+                    case CLOCKWISE_180 -> loc = loc.add(new Vec3i(size.getX() - 1, 0, size.getZ() - 1));
+                    case COUNTERCLOCKWISE_90 -> loc = loc.add(new Vec3i(0, 0, size.getZ() - 1));
                 }
             } else if (tag.contains("offsetV2", 10)) {
                 Direction direction = c.getSide().getOpposite();
@@ -255,15 +255,20 @@ public class MyItem extends Item {
                     .setSize(x.getSize())
                     .setMirror(BlockMirror.NONE)
                     .setRotation(rotation);
-            boolean success = false;
             try {
-                if (x.place((ServerWorld) c.getWorld(), loc, BlockPos.ORIGIN, ps, c.getWorld().getRandom(), 2))
-                    success = true;
-            } catch (PlacementNotAllowedException ignored) {
-            }
-            if (success) {
-                c.getStack().decrement(1);
-                return ActionResult.SUCCESS;
+                if (x.place((ServerWorld) c.getWorld(), loc, BlockPos.ORIGIN, ps, c.getWorld().getRandom(), 2)) {
+                    c.getStack().decrement(1);
+                    return ActionResult.SUCCESS;
+                }
+            } catch (PlacementNotAllowedException placementNotAllowedException) {
+                Text message =
+                        Text.translatable("items.structure.spawner.invalid.location.reason",
+                                placementNotAllowedException.getName(),
+                                Text.literal(String.valueOf(placementNotAllowedException.getPos().getX())),
+                                Text.literal(String.valueOf(placementNotAllowedException.getPos().getY())),
+                                Text.literal(String.valueOf(placementNotAllowedException.getPos().getZ())));
+                sendPlayer(player, message);
+                return ActionResult.FAIL;
             }
             Text message =
                     Text.translatable("items.structure.spawner.invalid.location");

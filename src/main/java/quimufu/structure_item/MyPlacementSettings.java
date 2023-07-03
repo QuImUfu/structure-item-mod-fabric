@@ -17,7 +17,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MyPlacementSettings extends StructurePlacementData {
@@ -75,12 +74,13 @@ public class MyPlacementSettings extends StructurePlacementData {
             if (currentBlockInfo != null && World.isValid(posToCheck = currentBlockInfo.pos())) {
                 for (Entity e : entitiesWithinAABB) {
                     if (e.getBoundingBox().intersects(new Box(posToCheck))) {
-                        throw new PlacementNotAllowedException();
+                        throw new PlacementNotAllowedException(e.getName(), posToCheck);
                     }
                 }
                 Block blockToCheck = world.getBlockState(posToCheck).getBlock();
-                if (blacklist.contains(blockToCheck))
-                    throw new PlacementNotAllowedException();
+                if (blacklist.contains(blockToCheck)) {
+                    throw new PlacementNotAllowedException(blockToCheck.getName(), posToCheck);
+                }
             }
             return currentBlockInfo;
         }
