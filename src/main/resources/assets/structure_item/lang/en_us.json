@@ -5,6 +5,7 @@
   "items.structure.spawner.structure.nonexistent": "Structure: %s does not exist",
   "items.structure.spawner.invalid.block": "Block %s invalid",
   "items.structure.spawner.invalid.offsetV2": "offsetV2 tag %s invalid: %s",
+  "items.structure.spawner.invalid.rotate": "rotate tag invalid direction: %s",
   "items.structure.spawner.no.tag": "Item has no NBT tag",
   "items.structure.spawner.no.structure": "Item has no String \"structure\": tag",
   "item.structure_item.item": "Structure Spawner",
@@ -12,7 +13,7 @@
   "item.structure_item.item.tooltip.structure": "Places down: ",
   "item.structure_item.item.tooltip.allowed.on": "Can be placed on: ",
   "item.structure_item.item.tooltip.fixed.offset": "Offset:",
-  "item.structure_item.item.tooltip.v2.offset": "Advanced Offset:",
+  "item.structure_item.item.tooltip.v2.offset": "Advanced offset:",
   "item.structure_item.item.tooltip.xyz":"  x: %s y: %s z: %s",
   "item.structure_item.item.tooltip.xFuncOff":"  x: %s",
   "item.structure_item.item.tooltip.yFuncOff":"  y: %s",
@@ -21,7 +22,14 @@
   "item.structure_item.item.tooltip.blacklist": "Blacklist:",
   "item.structure_item.item.tooltip.blacklist.more": "  And %s more...",
   "item.structure_item.item.tooltip.replaceEntities": "Deletes Entities in the way",
-  "item.structure_item.item.tooltip.doNotReplaceEntities": "Doesn't allow placement with Entities in the way",
+  "item.structure_item.item.tooltip.doNotReplaceEntities": "Doesn't allow placement with entities in the way",
   "item.structure_item.item.tooltip.placeEntities": "Places contained Entities",
-  "item.structure_item.item.tooltip.doNotPlaceEntities": "Doesn't place contained Entities"
+  "item.structure_item.item.tooltip.doNotPlaceEntities": "Doesn't place contained entities",
+  "item.structure_item.item.tooltip.dynamic.rotation": "Rotated dynamically",
+  "item.structure_item.item.tooltip.dynamic.rotation.value": "Player is standing %s of structure ",
+  "item.structure_item.item.tooltip.dynamic.dir.north": "north",
+  "item.structure_item.item.tooltip.dynamic.dir.south": "south",
+  "item.structure_item.item.tooltip.dynamic.dir.east": "east",
+  "item.structure_item.item.tooltip.dynamic.dir.west": "west",
+  "item.structure_item.item.tooltip.fixed.rotation": "Fixed rotation"
 }

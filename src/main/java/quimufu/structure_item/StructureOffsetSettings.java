@@ -1,6 +1,7 @@
 package quimufu.structure_item;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -23,6 +24,7 @@ public class StructureOffsetSettings {
             return args[(int) (Math.round(args[0]) + 1L)];
         }
     };
+    private BlockRotation rotation;
 
     public static StructureOffsetSettings ofTag(NbtCompound offsetTag) {
         StructureOffsetSettings settings = new StructureOffsetSettings();
@@ -83,30 +85,96 @@ public class StructureOffsetSettings {
 
     private Vec3i getDirectionalOffset(Direction direction, Vec3i size) {
         BlockPos loc = new BlockPos(0, 0, 0);
-        switch (direction) {
-            case WEST -> {
-                loc = loc.offset(Direction.NORTH, size.getZ() / 2);
-                loc = loc.offset(Direction.WEST, size.getX() - 1);
-            }
-            case EAST -> //positive x
-                    loc = loc.offset(Direction.NORTH, size.getZ() / 2);
-            case NORTH -> {
-                loc = loc.offset(Direction.NORTH, size.getZ() - 1);
-                loc = loc.offset(Direction.WEST, size.getX() / 2);
-            }
-            case SOUTH -> //positive z
-                    loc = loc.offset(Direction.WEST, size.getX() / 2);
-            case UP -> {    //positive y
-                loc = loc.offset(Direction.NORTH, size.getZ() / 2);
-                loc = loc.offset(Direction.WEST, size.getX() / 2);
-                loc = loc.offset(Direction.UP);
-            }
-            case DOWN -> {
-                loc = loc.offset(Direction.NORTH, size.getZ() / 2);
-                loc = loc.offset(Direction.WEST, size.getX() / 2);
-                loc = loc.offset(Direction.DOWN, size.getY());
-            }
+        switch (rotation) {
+            case NONE:
+                switch (direction) {
+                    case WEST:
+                        loc = loc.offset(Direction.NORTH, size.getZ() / 2);
+                        return loc.offset(Direction.WEST, size.getX() - 1);
+                    case EAST://positive x
+                        return loc.offset(Direction.NORTH, size.getZ() / 2);
+                    case NORTH:
+                        loc = loc.offset(Direction.NORTH, size.getZ() - 1);
+                        return loc.offset(Direction.WEST, size.getX() / 2);
+                    case SOUTH://positive z
+                        return loc.offset(Direction.WEST, size.getX() / 2);
+                    case UP://positive y
+                        loc = loc.offset(Direction.NORTH, size.getZ() / 2);
+                        loc = loc.offset(Direction.WEST, size.getX() / 2);
+                        return loc.offset(Direction.UP);
+                    case DOWN:
+                        loc = loc.offset(Direction.NORTH, size.getZ() / 2);
+                        loc = loc.offset(Direction.WEST, size.getX() / 2);
+                        return loc.offset(Direction.DOWN, size.getY());
+                }
+            case CLOCKWISE_90:
+                switch (direction) {
+                    case WEST:
+                        return loc.offset(Direction.NORTH, size.getX() / 2);
+                    case EAST://positive x
+                        loc = loc.offset(Direction.NORTH, size.getX() / 2);
+                        return loc.offset(Direction.EAST, size.getZ() - 1);
+                    case NORTH:
+                        loc = loc.offset(Direction.NORTH, size.getX() - 1);
+                        return loc.offset(Direction.EAST, size.getZ() / 2);
+                    case SOUTH://positive z
+                        return loc.offset(Direction.EAST, size.getZ() / 2);
+                    case UP://positive y
+                        loc = loc.offset(Direction.NORTH, size.getX() / 2);
+                        loc = loc.offset(Direction.EAST, size.getZ() / 2);
+                        return loc.offset(Direction.UP);
+                    case DOWN:
+                        loc = loc.offset(Direction.NORTH, size.getX() / 2);
+                        loc = loc.offset(Direction.EAST, size.getZ() / 2);
+                        return loc.offset(Direction.DOWN, size.getY());
+                }
+            case CLOCKWISE_180:
+                switch (direction) {
+                    case WEST:
+                        return loc.offset(Direction.SOUTH, size.getX() / 2);
+                    case EAST://positive x
+                        loc = loc.offset(Direction.SOUTH, size.getZ() / 2);
+                        return loc.offset(Direction.EAST, size.getX() - 1);
+                    case NORTH:
+                        return loc.offset(Direction.EAST, size.getX() / 2);
+                    case SOUTH://positive z
+                        loc = loc.offset(Direction.EAST, size.getX() / 2);
+                        return loc.offset(Direction.SOUTH, size.getZ() - 1);
+                    case UP://positive y
+                        loc = loc.offset(Direction.SOUTH, size.getZ() / 2);
+                        loc = loc.offset(Direction.EAST, size.getX() / 2);
+                        return loc.offset(Direction.UP);
+                    case DOWN:
+                        loc = loc.offset(Direction.SOUTH, size.getZ() / 2);
+                        loc = loc.offset(Direction.EAST, size.getX() / 2);
+                        return loc.offset(Direction.DOWN, size.getY());
+                }
+            case COUNTERCLOCKWISE_90:
+                switch (direction) {
+                    case WEST:
+                        loc = loc.offset(Direction.SOUTH, size.getX() / 2);
+                        return loc.offset(Direction.WEST, size.getZ() - 1);
+                    case EAST://positive x
+                        return loc.offset(Direction.SOUTH, size.getX() / 2);
+                    case NORTH:
+                        return loc.offset(Direction.WEST, size.getZ() / 2);
+                    case SOUTH://positive z
+                        loc = loc.offset(Direction.SOUTH, size.getX() - 1);
+                        return loc.offset(Direction.WEST, size.getZ() / 2);
+                    case UP://positive y
+                        loc = loc.offset(Direction.SOUTH, size.getX() / 2);
+                        loc = loc.offset(Direction.WEST, size.getZ() / 2);
+                        return loc.offset(Direction.UP);
+                    case DOWN:
+                        loc = loc.offset(Direction.SOUTH, size.getX() / 2);
+                        loc = loc.offset(Direction.WEST, size.getZ() / 2);
+                        return loc.offset(Direction.DOWN, size.getY());
+                }
         }
         return loc;
+    }
+
+    public void setRotation(BlockRotation rotation) {
+        this.rotation = rotation;
     }
 }

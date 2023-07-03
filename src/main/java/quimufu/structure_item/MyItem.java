@@ -83,6 +83,7 @@ public class MyItem extends Item {
                         if (i == 4) {
                             texts.add(Text.translatable("item.structure_item.item.tooltip.blacklist.more",
                                     Text.literal(String.valueOf(bl.size() - i))));
+                            break;
                         }
                     }
                 }
@@ -96,6 +97,15 @@ public class MyItem extends Item {
                 } else {
                     texts.add(Text.translatable("item.structure_item.item.tooltip.doNotPlaceEntities"));
                 }
+                if (tag.contains("rotate", NbtElement.STRING_TYPE)) {
+                    texts.add(Text.translatable("item.structure_item.item.tooltip.dynamic.rotation"));
+                    texts.add(Text.translatable("item.structure_item.item.tooltip.dynamic.rotation.value",
+                            Text.translatable("item.structure_item.item.tooltip.dynamic.dir." + tag.getString("rotate"))));
+                } else {
+                    texts.add(Text.translatable("item.structure_item.item.tooltip.fixed.rotation"));
+
+                }
+
             }
         }
 
@@ -165,15 +175,40 @@ public class MyItem extends Item {
             }
             StructureTemplate x = xOpt.get();
 
+            BlockRotation rotation = BlockRotation.NONE;
+            if (tag.contains("rotate", NbtElement.STRING_TYPE)) {
+                String defaultOrientation = tag.getString("rotate");
+
+                Direction defaultDir = Direction.byName(defaultOrientation);
+                Direction currentDir = c.getSide();
+
+                if (defaultDir == null) {
+                    Text message =
+                            Text.translatable("items.structure.spawner.invalid.rotate",
+                                    Text.literal(defaultOrientation));
+                    sendPlayerChat(player, message);
+                } else {
+                    rotation = getRotationBetween(defaultDir, currentDir);
+                }
+            }
+
 
             BlockPos loc = c.getBlockPos().offset(c.getSide());
             if (tag.contains("offset", 10)) {
                 BlockPos offset = NbtHelper.toBlockPos(tag.getCompound("offset"));
                 loc = loc.add(offset);
+
+                Vec3i size = x.getSize();
+                switch (rotation) {
+                    case CLOCKWISE_90 -> loc = loc.add(new Vec3i(size.getX()-1, 0, 0));
+                    case CLOCKWISE_180 -> loc = loc.add(new Vec3i(size.getX()-1, 0, size.getZ()-1));
+                    case COUNTERCLOCKWISE_90 -> loc = loc.add(new Vec3i(0, 0, size.getZ()-1));
+                }
             } else if (tag.contains("offsetV2", 10)) {
                 Direction direction = c.getSide().getOpposite();
                 try {
                     StructureOffsetSettings offset = StructureOffsetSettings.ofTag(tag.getCompound("offsetV2"));
+                    offset.setRotation(rotation);
                     Vec3i size = x.getSize();
                     loc = loc.add(offset.getEffective(direction, size));
                 } catch (Exception e) {
@@ -185,11 +220,12 @@ public class MyItem extends Item {
             } else {
                 Direction direction = c.getSide().getOpposite();
                 StructureOffsetSettings offset = StructureOffsetSettings.dynamic();
+                offset.setRotation(rotation);
                 Vec3i size = x.getSize();
                 loc = loc.add(offset.getEffective(direction, size));
             }
 
-            MyPlacementSettings ps = (new MyPlacementSettings());
+            MyPlacementSettings ps = new MyPlacementSettings();
             if (tag.contains("replaceEntities", 99)) {
                 ps.setReplaceEntities(tag.getBoolean("replaceEntities"));
             }
@@ -213,15 +249,17 @@ public class MyItem extends Item {
                 }
                 ps.forbidOverwrite(blacklist);
             }
+
+
             ps.setWorld(c.getWorld())
                     .setSize(x.getSize())
                     .setMirror(BlockMirror.NONE)
-                    .setRotation(BlockRotation.NONE);
+                    .setRotation(rotation);
             boolean success = false;
             try {
-                if (x.place((ServerWorld) c.getWorld(), loc, loc, ps, c.getWorld().getRandom(), 2))
+                if (x.place((ServerWorld) c.getWorld(), loc, BlockPos.ORIGIN, ps, c.getWorld().getRandom(), 2))
                     success = true;
-            } catch (NullPointerException ignored) {
+            } catch (PlacementNotAllowedException ignored) {
             }
             if (success) {
                 c.getStack().decrement(1);
@@ -233,6 +271,22 @@ public class MyItem extends Item {
             return ActionResult.FAIL;
         }
         return ActionResult.FAIL;
+    }
+
+    private BlockRotation getRotationBetween(Direction from, Direction to) {
+        if (to == Direction.DOWN || to == Direction.UP) {
+            return BlockRotation.NONE;
+        }
+        if (from.getOpposite() == to) {
+            return BlockRotation.CLOCKWISE_180;
+        }
+        if (from.rotateYClockwise() == to) {
+            return BlockRotation.CLOCKWISE_90;
+        }
+        if (from.rotateYCounterclockwise() == to) {
+            return BlockRotation.COUNTERCLOCKWISE_90;
+        }
+        return BlockRotation.NONE;
     }
 
     private static void sendPlayer(ServerPlayerEntity player, Text message) {
