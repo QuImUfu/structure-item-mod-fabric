@@ -1,4 +1,7 @@
 # Structure Item Mod (Fabric)
+
+**Moved to https://merl.dnshome.de/git/QuImUfu/structure-item-mod-fabric**
+
 Started as a Fabric port of [structure-item-mod](https://github.com/QuImUfu/structure-item-mod).  
 Currently, the only supported version of the mod
 
